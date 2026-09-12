@@ -5,7 +5,7 @@ from pathlib import Path
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 SPX_FILE = DATA_DIR / "spx.csv"
 DTB3_FILE = DATA_DIR / "dtb3.csv"
-FIGURE_DIR = Path(__file__).resolve().parent.parent / "latex" / "figures"
+FIGURE_DIR = Path(__file__).resolve().parent.parent / "figures"
 
 # Prices are read from PRICE_START so the first return in the sample is complete.
 # The analysis window itself is SAMPLE_START to SAMPLE_END, whole years only.
@@ -17,7 +17,7 @@ TRADING_DAYS_PER_YEAR = 252
 
 # Average annual S&P 500 dividend yield over 1980 to 2023, credited to the
 # total return benchmark only.
-DIVIDEND_YIELD = 0.024811
+DIVIDEND_YIELD = 0.0248
 
 # Canonical Halloween window, November through April.
 HALLOWEEN_MONTHS = (11, 12, 1, 2, 3, 4)

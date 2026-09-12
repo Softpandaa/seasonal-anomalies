@@ -13,9 +13,10 @@ Neither strategy beats the total return benchmark. The Halloween strategy reache
 ```
 data/     committed inputs
 src/      analysis modules, every parameter declared once in config.py
-latex/    main.tex and its figures
 report.pdf
 ```
+
+The report is distributed as a compiled PDF. Its typesetting source is not included.
 
 ## Data
 
@@ -32,4 +33,4 @@ pip install -r requirements.txt
 python src/plots.py
 ```
 
-This writes the twelve figures to `latex/figures/` and prints the performance table of the report. Compile `latex/main.tex` for the report itself.
+This prints the performance table of the report and writes the twelve figures it uses to `figures/`, which is created on first run and is not tracked.
