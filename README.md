@@ -1,4 +1,4 @@
-# Seasonal Anomalies
+# Seasonal Anomalies in the US Equity Market
 
 Monthly and daily calendar seasonality in the S&P 500 over 1981 to 2023, and whether the Halloween and turn of month effects are profitable as tradable strategies.
 
