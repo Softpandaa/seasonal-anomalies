@@ -3,6 +3,3 @@ numpy
 pandas
 scipy
 matplotlib
-
-# fetch_data.py only, kept in archive/ for data provenance
-# yfinance
