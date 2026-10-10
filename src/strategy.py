@@ -1,27 +1,14 @@
-"""Position construction.
-
-Entry is at the close of the last trading day of October and exit at the close
-of the last trading day of April, so the position must already be on for the
-first trading day of November. With profit and loss formed as w_{t-1} r_t, the
-indicator therefore looks one trading day ahead of the calendar test.
-"""
+"""Positions, buy and hold benchmarks and strategy returns."""
 
 import numpy as np
 import pandas as pd
 
-from config import (
-    DIVIDEND_YIELD,
-    HALLOWEEN_MONTHS,
-    POSITION_CAP,
-    TOM_BACKWARD_DAYS,
-    TOM_FORWARD_DAYS,
-    TRADING_DAYS_PER_YEAR,
-    TRANSACTION_COST,
-)
+from config import (DIVIDEND_YIELD, HALLOWEEN_MONTHS, POSITION_CAP, TOM_BACKWARD_DAYS,
+                    TOM_FORWARD_DAYS, TRADING_DAYS_PER_YEAR, TRANSACTION_COST)
 
 
 def _next_day(flag):
-    """Shift a per-day calendar flag back one trading day."""
+    """Shift a calendar flag back one trading day, since profit and loss is w_{t-1} r_t."""
     return flag.shift(-1).fillna(False).astype(bool)
 
 
@@ -42,16 +29,7 @@ def position(frame, turn_of_month=False):
 
 
 def benchmark(frame, dividends=True):
-    """Buy and hold log return.
-
-    A position held every trading day receives the whole annual dividend
-    whatever its timing, so the average yield is exact here. It is not applied
-    to the seasonal strategies, whose dividend capture depends on timing the
-    annual figure cannot resolve.
-
-    No transaction cost is charged. A single entry over the sample is worth five
-    basis points in total and is immaterial against the strategies' turnover.
-    """
+    """Buy and hold log return, without cost, plus the average dividend yield if `dividends`."""
     simple = frame["ret"].copy()
     if dividends:
         simple = simple + DIVIDEND_YIELD / TRADING_DAYS_PER_YEAR
@@ -59,13 +37,8 @@ def benchmark(frame, dividends=True):
 
 
 def returns(frame, weight, cost=TRANSACTION_COST):
-    """Daily strategy log return.
-
-    The portfolio is combined in simple returns, which is the only form that
-    weights across positions, and the result is converted to a log return so
-    every statistic downstream is on one scale.
-    """
+    """Daily log return of weight w_{t-1} in the index and 1 - w_{t-1} in bills, net of cost."""
     held = weight.shift(1)
-    traded = np.abs(weight.shift(1) - weight.shift(2)).fillna(0.0)
+    traded = held.diff().abs().fillna(0.0)
     simple = held * frame["ret"] + (1.0 - held) * frame["rf"] - cost * traded
     return np.log1p(simple).dropna()

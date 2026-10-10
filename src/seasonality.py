@@ -1,9 +1,4 @@
-"""Seasonal factor estimators, computed directly on the trading calendar.
-
-The seasonal component of a classical additive decomposition is the mean of
-the detrended series at each cycle position. Computing that directly avoids
-assuming a fixed number of trading days per month.
-"""
+"""Seasonal factors on the trading calendar, rolling splits and the January barometer."""
 
 import pandas as pd
 from scipy.stats import kendalltau
@@ -18,21 +13,14 @@ def monthly_factor(monthly):
 
 
 def daily_factor(frame, column):
-    """Mean deviation of each trading day position from its own month's mean.
-
-    `column` is either the forward or the backward trading day index.
-    """
+    """Mean deviation of each trading day position (`column`) from its month's mean."""
     month = frame.index.to_period("M")
     demeaned = frame["ret"] - frame["ret"].groupby(month).transform("mean")
     return demeaned.groupby(frame[column]).mean()
 
 
 def rolling_split(monthly, mask, years, names):
-    """Rolling mean monthly return inside and outside a calendar mask.
-
-    Defined only where the trailing window is complete. `names` labels the two
-    columns.
-    """
+    """Rolling mean monthly return inside and outside `mask`, where the window is complete."""
     window = 12 * years
     complete = monthly.rolling(window).count() == window
 
@@ -57,11 +45,7 @@ def rolling_january(monthly, years):
 
 
 def january_barometer(monthly):
-    """January log return against the return over the rest of the year.
-
-    Log returns aggregate by summation, so February to December is the sum of
-    those eleven monthly figures.
-    """
+    """January log return against the sum of the February to December log returns."""
     january = monthly[monthly.index.month == 1].copy()
     january.index = january.index.year
 
@@ -72,11 +56,7 @@ def january_barometer(monthly):
 
 
 def rolling_correlation(frame, column, window):
-    """Rolling Pearson and Kendall correlation of January against `column`.
-
-    `frame` carries one row per year, so `window` is a count of years. This
-    differs from rolling_split, which takes years and converts to months.
-    """
+    """Rolling Pearson and Kendall correlation of January with `column`, `window` in years."""
     rows = {}
     for i in range(window - 1, len(frame)):
         block = frame.iloc[i - window + 1 : i + 1]
