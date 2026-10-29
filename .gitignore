@@ -3,3 +3,4 @@ latex/
 figures/
 __pycache__/
 *.pyc
+slides.pdf
