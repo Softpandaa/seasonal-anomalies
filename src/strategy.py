@@ -1,4 +1,4 @@
-"""Positions, buy and hold benchmarks and strategy returns."""
+"""Positions, the buy and hold benchmark and strategy returns."""
 
 import numpy as np
 import pandas as pd
@@ -28,17 +28,19 @@ def position(frame, turn_of_month=False):
     return weight.clip(upper=POSITION_CAP)
 
 
-def benchmark(frame, dividends=True):
-    """Buy and hold log return, without cost, plus the average dividend yield if `dividends`."""
-    simple = frame["ret"].copy()
-    if dividends:
-        simple = simple + DIVIDEND_YIELD / TRADING_DAYS_PER_YEAR
-    return np.log1p(simple).dropna()
+def index_return(frame):
+    """Daily simple return of the index with the average dividend yield accrued evenly."""
+    return frame["ret"] + DIVIDEND_YIELD / TRADING_DAYS_PER_YEAR
+
+
+def benchmark(frame):
+    """Buy and hold log return with dividends, without cost."""
+    return np.log1p(index_return(frame)).dropna()
 
 
 def returns(frame, weight, cost=TRANSACTION_COST):
     """Daily log return of weight w_{t-1} in the index and 1 - w_{t-1} in bills, net of cost."""
     held = weight.shift(1)
     traded = held.diff().abs().fillna(0.0)
-    simple = held * frame["ret"] + (1.0 - held) * frame["rf"] - cost * traded
+    simple = held * index_return(frame) + (1.0 - held) * frame["rf"] - cost * traded
     return np.log1p(simple).dropna()

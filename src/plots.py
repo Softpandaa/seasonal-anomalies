@@ -159,28 +159,26 @@ def build():
 
     s1 = st.returns(frame, st.position(frame))
     s2 = st.returns(frame, st.position(frame, turn_of_month=True))
-    p1 = st.benchmark(frame, dividends=False)
-    p2 = st.benchmark(frame, dividends=True)
+    bh = st.benchmark(frame)
     log_rf = np.log1p(frame["rf"])
 
-    _lines({"S1": np.exp(s1.cumsum()), "S2": np.exp(s2.cumsum()), "P1": np.exp(p1.cumsum())},
+    _lines({"S1": np.exp(s1.cumsum()), "S2": np.exp(s2.cumsum()), "BH": np.exp(bh.cumsum())},
            "Growth of one dollar, log scale", "equity_curves.png", logscale=True)
 
-    _lines({"S1": 100 * pf.rolling_alpha(s1, p1), "S2": 100 * pf.rolling_alpha(s2, p1)},
-           "Annualised return over P1 (%)", "rolling_outperformance.png", zero=True)
+    _lines({"S1": 100 * pf.rolling_alpha(s1, bh), "S2": 100 * pf.rolling_alpha(s2, bh)},
+           "Annualised return over BH (%)", "rolling_outperformance.png", zero=True)
 
     _lines({"S1": pf.rolling_sharpe(s1, log_rf), "S2": pf.rolling_sharpe(s2, log_rf),
-            "P1": pf.rolling_sharpe(p1, log_rf)},
+            "BH": pf.rolling_sharpe(bh, log_rf)},
            "Rolling Sharpe ratio", "rolling_sharpe.png", zero=True)
 
-    _lines({"S1": pf.drawdown(s1), "S2": pf.drawdown(s2), "P1": pf.drawdown(p1)},
+    _lines({"S1": pf.drawdown(s1), "S2": pf.drawdown(s2), "BH": pf.drawdown(bh)},
            "Drawdown from running peak (%)", "drawdown.png", zero=True, legend="lower left")
 
     return pf.table({
         "S1 Halloween": s1,
         "S2 Halloween and turn of month": s2,
-        "P1 Buy and hold": p1,
-        "P2 Buy and hold with dividend": p2,
+        "BH Buy and hold": bh,
     }, log_rf)
 
 

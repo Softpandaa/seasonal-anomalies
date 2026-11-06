@@ -21,7 +21,7 @@ TOM_FORWARD_DAYS = 5                  # turn of month: first and last 5 trading 
 TOM_BACKWARD_DAYS = 5
 POSITION_CAP = 1.5                    # when both signals are on
 TRANSACTION_COST = 0.0005             # one way, per unit of position change
-DIVIDEND_YIELD = 0.0248               # P2 only, 1980 to 2023 mean
+DIVIDEND_YIELD = 0.0248               # 1980 to 2023 mean, earned while holding the index
 
 # Figures ---------------------------------------------------------------------
 ROLLING_YEARS = 5
